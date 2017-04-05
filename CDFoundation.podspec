@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.ios.deployment_target = '8.0'
 
-  s.public_header_files = 'CDFoundation/CDFoundation.h'
+  s.public_header_files = 'CDFoundation/*.h'
   s.source_files = 'CDFoundation/*.{h,m}'
   
   s.subspec 'CDCoreData' do |ss|
