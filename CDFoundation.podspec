@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'CDFoundation'
-  s.version = '0.0.2'
+  s.version = '0.0.1'
   s.license = 'MIT'
   s.summary = 'Basic toolset for CodoonSport.'
   s.homepage = 'https://github.com/iOSCodoon'
@@ -10,7 +10,6 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '8.0'
   s.module_name = 'CDFoundation'
   s.public_header_files = 'CDFoundation/*.h'
-  s.source_files = 'CDFoundation/*.{h,m}'
   
   s.subspec 'CDCoreData' do |ss|
     ss.source_files = 'CDFoundation/CDCoreData/*.{h,m}'
