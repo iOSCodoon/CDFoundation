@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source = { :git => 'https://github.com/iOSCodoon/CDFoundation.git', :tag => s.version.to_s, :submodules => true }
   s.requires_arc = true
   s.ios.deployment_target = '8.0'
-
+  s.module_name = 'CDFoundation'
   s.public_header_files = 'CDFoundation/*.h'
   s.source_files = 'CDFoundation/*.{h,m}'
   
