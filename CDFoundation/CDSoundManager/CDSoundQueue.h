@@ -14,6 +14,7 @@
 
 @protocol CDSoundQueueDelegate <NSObject>
 @optional
+- (BOOL)soundQueue:(CDSoundQueue *)soundQueue shouldEnqueueTask:(CDSoundTask *)task;
 - (void)soundQueue:(CDSoundQueue *)soundQueue willStartTask:(CDSoundTask *)task;
 - (void)soundQueue:(CDSoundQueue *)soundQueue didStartTask:(CDSoundTask *)task;
 - (void)soundQueue:(CDSoundQueue *)soundQueue willFinishTask:(CDSoundTask *)task;

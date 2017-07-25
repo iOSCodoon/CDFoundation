@@ -77,6 +77,17 @@
         return;
     }
 
+    __block BOOL enqueuable = YES;
+    [_delegates enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if([obj respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
+            enqueuable &= [obj soundQueue:self shouldEnqueueTask:task];
+        }
+    }];
+
+    if(!enqueuable) {
+        return;
+    }
+    
     if(task.options&CDSoundTaskOptionQueued) {
         [_tasks addObject:task];
         
