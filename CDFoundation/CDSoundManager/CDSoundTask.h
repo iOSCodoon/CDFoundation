@@ -55,6 +55,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 
 @property (readwrite, nonatomic, strong) void (^completion) ();
 
+@property (readwrite, nonatomic, strong) id userInfo;
+
 @end
 
 
