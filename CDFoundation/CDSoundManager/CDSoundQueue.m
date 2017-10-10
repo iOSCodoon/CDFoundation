@@ -78,11 +78,11 @@
     }
     
     __block BOOL enqueuable = YES;
-    [_delegates.allObjects enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
-            enqueuable &= [obj soundQueue:self shouldEnqueueTask:task];
+    for(id<CDSoundQueueDelegate> delegate in _delegates) {
+        if([delegate respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
+            enqueuable &= [delegate soundQueue:self shouldEnqueueTask:task];
         }
-    }];
+    }
     
     if(!enqueuable) {
         return;
@@ -148,7 +148,7 @@
         if([delegate respondsToSelector:@selector(soundQueue:willStartTask:)]) {
             [delegate soundQueue:self willStartTask:task];
         }
-    }];
+    }
 }
 
 - (void)soundTaskDidStartPlaying:(CDSoundTask *)task {
@@ -156,7 +156,7 @@
         if([delegate respondsToSelector:@selector(soundQueue:didStartTask:)]) {
             [delegate soundQueue:self didStartTask:task];
         }
-    }];
+    }
 }
 
 - (void)soundTaskWillStopPlaying:(CDSoundTask *)task {
@@ -164,7 +164,7 @@
         if([delegate respondsToSelector:@selector(soundQueue:willFinishTask:)]) {
             [delegate soundQueue:self willFinishTask:task];
         }
-    }];
+    }
 }
 
 - (void)soundTaskDidStopPlaying:(CDSoundTask *)task {
@@ -174,7 +174,7 @@
         if([delegate respondsToSelector:@selector(soundQueue:didFinishTask:)]) {
             [delegate soundQueue:self didFinishTask:task];
         }
-    }];
+    }
     
     [self processNextIfNeeded];
 }
