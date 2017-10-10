@@ -144,26 +144,25 @@
 #pragma mark - CDSoundTaskDelegate
 
 - (void)soundTaskWillStartPlaying:(CDSoundTask *)task {
-    [_delegates.allObjects enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(soundQueue:willStartTask:)])
-        {
-            [obj soundQueue:self willStartTask:task];
+    for(id<CDSoundQueueDelegate> delegate in _delegates) {
+        if([delegate respondsToSelector:@selector(soundQueue:willStartTask:)]) {
+            [delegate soundQueue:self willStartTask:task];
         }
     }];
 }
 
 - (void)soundTaskDidStartPlaying:(CDSoundTask *)task {
-    [_delegates.allObjects enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(soundQueue:didStartTask:)]) {
-            [obj soundQueue:self didStartTask:task];
+    for(id<CDSoundQueueDelegate> delegate in _delegates) {
+        if([delegate respondsToSelector:@selector(soundQueue:didStartTask:)]) {
+            [delegate soundQueue:self didStartTask:task];
         }
     }];
 }
 
 - (void)soundTaskWillStopPlaying:(CDSoundTask *)task {
-    [_delegates.allObjects enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(soundQueue:willFinishTask:)]) {
-            [obj soundQueue:self willFinishTask:task];
+    for(id<CDSoundQueueDelegate> delegate in _delegates) {
+        if([delegate respondsToSelector:@selector(soundQueue:willFinishTask:)]) {
+            [delegate soundQueue:self willFinishTask:task];
         }
     }];
 }
@@ -171,25 +170,22 @@
 - (void)soundTaskDidStopPlaying:(CDSoundTask *)task {
     _task = nil;
     
-    [_delegates.allObjects enumerateObjectsUsingBlock:^(id<CDSoundQueueDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if([obj respondsToSelector:@selector(soundQueue:didFinishTask:)]) {
-            [obj soundQueue:self didFinishTask:task];
+    for(id<CDSoundQueueDelegate> delegate in _delegates) {
+        if([delegate respondsToSelector:@selector(soundQueue:didFinishTask:)]) {
+            [delegate soundQueue:self didFinishTask:task];
         }
     }];
     
     [self processNextIfNeeded];
 }
 
-- (void)addDelegate:(id<CDSoundQueueDelegate>)delegate
-{
-    if([delegate conformsToProtocol:@protocol(CDSoundQueueDelegate)] && ![_delegates containsObject:delegate])
-    {
+- (void)addDelegate:(id<CDSoundQueueDelegate>)delegate {
+    if([delegate conformsToProtocol:@protocol(CDSoundQueueDelegate)] && ![_delegates containsObject:delegate]) {
         [_delegates addObject:delegate];
     }
 }
 
-- (void)removeDelegate:(id<CDSoundQueueDelegate>)delegate
-{
+- (void)removeDelegate:(id<CDSoundQueueDelegate>)delegate {
     [_delegates removeObject:delegate];
 }
 
