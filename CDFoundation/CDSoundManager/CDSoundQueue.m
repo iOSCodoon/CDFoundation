@@ -26,8 +26,7 @@
 
 @implementation CDSoundQueue
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static id instance;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
@@ -36,8 +35,7 @@
     return instance;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     
     _tasks = [[NSMutableArray alloc] init];
