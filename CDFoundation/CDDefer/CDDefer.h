@@ -6,6 +6,8 @@
 //  Copyright © 2016 Codoon. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 typedef long dispatch_defer_t;
 
 extern dispatch_defer_t dispatch_defer_create();
