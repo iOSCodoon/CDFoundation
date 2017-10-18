@@ -75,6 +75,10 @@
         return;
     }
     
+    if(task.data == nil) {
+        return;
+    }
+    
     __block BOOL enqueuable = YES;
     for(id<CDSoundQueueDelegate> delegate in _delegates) {
         if([delegate respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
