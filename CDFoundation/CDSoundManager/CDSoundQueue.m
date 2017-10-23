@@ -20,6 +20,7 @@
 @property (readwrite, nonatomic, strong) CDSoundTask *task;
 @property (readwrite, nonatomic, assign) dispatch_defer_t defer;
 @property (readwrite, nonatomic, strong) NSHashTable <id<CDSoundQueueDelegate>> *delegates;
+@property (readwrite, nonatomic, strong) dispatch_queue_t syncQueue;
 @property (readwrite, nonatomic, assign) BOOL interrupted;
 @property (readwrite, nonatomic, strong) CTCallCenter *callCenter;
 @end
@@ -41,6 +42,8 @@
     _tasks = [[NSMutableArray alloc] init];
     
     _delegates = [[NSHashTable alloc] initWithOptions:NSPointerFunctionsWeakMemory capacity:0];
+    
+    _syncQueue = dispatch_queue_create(nil, DISPATCH_QUEUE_SERIAL);
     
     _defer = dispatch_defer_create();
     
@@ -80,11 +83,13 @@
     }
     
     __block BOOL enqueuable = YES;
-    for(id<CDSoundQueueDelegate> delegate in _delegates) {
-        if([delegate respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
-            enqueuable &= [delegate soundQueue:self shouldEnqueueTask:task];
+    dispatch_sync(_syncQueue, ^{
+        for(id<CDSoundQueueDelegate> delegate in _delegates) {
+            if([delegate respondsToSelector:@selector(soundQueue:shouldEnqueueTask:)]) {
+                enqueuable &= [delegate soundQueue:self shouldEnqueueTask:task];
+            }
         }
-    }
+    });
     
     if(!enqueuable) {
         return;
@@ -146,49 +151,61 @@
 #pragma mark - CDSoundTaskDelegate
 
 - (void)soundTaskWillStartPlaying:(CDSoundTask *)task {
-    for(id<CDSoundQueueDelegate> delegate in _delegates) {
-        if([delegate respondsToSelector:@selector(soundQueue:willStartTask:)]) {
-            [delegate soundQueue:self willStartTask:task];
+    dispatch_sync(_syncQueue, ^{
+        for(id<CDSoundQueueDelegate> delegate in _delegates) {
+            if([delegate respondsToSelector:@selector(soundQueue:willStartTask:)]) {
+                [delegate soundQueue:self willStartTask:task];
+            }
         }
-    }
+    });
 }
 
 - (void)soundTaskDidStartPlaying:(CDSoundTask *)task {
-    for(id<CDSoundQueueDelegate> delegate in _delegates) {
-        if([delegate respondsToSelector:@selector(soundQueue:didStartTask:)]) {
-            [delegate soundQueue:self didStartTask:task];
+    dispatch_sync(_syncQueue, ^{
+        for(id<CDSoundQueueDelegate> delegate in _delegates) {
+            if([delegate respondsToSelector:@selector(soundQueue:didStartTask:)]) {
+                [delegate soundQueue:self didStartTask:task];
+            }
         }
-    }
+    });
 }
 
 - (void)soundTaskWillStopPlaying:(CDSoundTask *)task {
-    for(id<CDSoundQueueDelegate> delegate in _delegates) {
-        if([delegate respondsToSelector:@selector(soundQueue:willFinishTask:)]) {
-            [delegate soundQueue:self willFinishTask:task];
+    dispatch_sync(_syncQueue, ^{
+        for(id<CDSoundQueueDelegate> delegate in _delegates) {
+            if([delegate respondsToSelector:@selector(soundQueue:willFinishTask:)]) {
+                [delegate soundQueue:self willFinishTask:task];
+            }
         }
-    }
+    });
 }
 
 - (void)soundTaskDidStopPlaying:(CDSoundTask *)task {
     _task = nil;
     
-    for(id<CDSoundQueueDelegate> delegate in _delegates) {
-        if([delegate respondsToSelector:@selector(soundQueue:didFinishTask:)]) {
-            [delegate soundQueue:self didFinishTask:task];
+    dispatch_sync(_syncQueue, ^{
+        for(id<CDSoundQueueDelegate> delegate in _delegates) {
+            if([delegate respondsToSelector:@selector(soundQueue:didFinishTask:)]) {
+                [delegate soundQueue:self didFinishTask:task];
+            }
         }
-    }
+    });
     
     [self processNextIfNeeded];
 }
 
 - (void)addDelegate:(id<CDSoundQueueDelegate>)delegate {
-    if([delegate conformsToProtocol:@protocol(CDSoundQueueDelegate)] && ![_delegates containsObject:delegate]) {
-        [_delegates addObject:delegate];
-    }
+    dispatch_sync(_syncQueue, ^{
+        if([delegate conformsToProtocol:@protocol(CDSoundQueueDelegate)] && ![_delegates containsObject:delegate]) {
+            [_delegates addObject:delegate];
+        }
+    });
 }
 
 - (void)removeDelegate:(id<CDSoundQueueDelegate>)delegate {
-    [_delegates removeObject:delegate];
+    dispatch_sync(_syncQueue, ^{
+        [_delegates removeObject:delegate];
+    });
 }
 
 @end
