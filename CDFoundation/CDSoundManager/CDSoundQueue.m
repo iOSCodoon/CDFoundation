@@ -65,7 +65,7 @@
 }
 
 - (void)didReceiveInterruptionNotification:(NSNotification *)notification {
-    AVAudioSessionInterruptionType interruptionType = [notification.userInfo validNumberForKey:AVAudioSessionInterruptionTypeKey].integerValue;
+    AVAudioSessionInterruptionType interruptionType = [[notification.userInfo objectForKey:AVAudioSessionInterruptionTypeKey] integerValue];
     if(interruptionType == AVAudioSessionInterruptionTypeBegan) {
         _interrupted = YES;
     } else {
@@ -78,7 +78,7 @@
 }
 
 - (void)didReceiveRouteChangeNotification:(NSNotification *)notification {
-    NSInteger reason = [notification.userInfo validNumberForKey:AVAudioSessionRouteChangeReasonKey].integerValue;
+    NSInteger reason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
     if(reason != AVAudioSessionRouteChangeReasonOldDeviceUnavailable && reason != AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
         [self drain];
     }
