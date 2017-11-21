@@ -36,6 +36,10 @@
     return instance;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (instancetype)init {
     self = [super init];
     
@@ -53,7 +57,35 @@
         [weakSelf callCenterDidChangeState];
     };
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMediaServicesWereLostNotification:) name:AVAudioSessionMediaServicesWereLostNotification object:nil];
+    
     return self;
+}
+
+- (void)didReceiveInterruptionNotification:(NSNotification *)notification {
+    AVAudioSessionInterruptionType interruptionType = [notification.userInfo validNumberForKey:AVAudioSessionInterruptionTypeKey].integerValue;
+    if(interruptionType == AVAudioSessionInterruptionTypeBegan) {
+        _interrupted = YES;
+    } else {
+        _interrupted = NO;
+    }
+    
+    if(_interrupted) {
+        [self drain];
+    }
+}
+
+- (void)didReceiveRouteChangeNotification:(NSNotification *)notification {
+    NSInteger reason = [notification.userInfo validNumberForKey:AVAudioSessionRouteChangeReasonKey].integerValue;
+    if(reason != AVAudioSessionRouteChangeReasonOldDeviceUnavailable && reason != AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
+        [self drain];
+    }
+}
+
+- (void)didReceiveMediaServicesWereLostNotification:(NSNotification *)notification {
+    [self drain];
 }
 
 - (void)callCenterDidChangeState {

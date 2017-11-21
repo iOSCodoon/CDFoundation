@@ -131,6 +131,16 @@
     });
 }
 
+- (void)setVolume:(float)volume {
+    [self willChangeValueForKey:@"volume"];
+    
+    _volume = volume;
+    
+    _weakPlayer.volume = volume;
+    
+    [self didChangeValueForKey:@"volume"];
+}
+
 #pragma mark - AVAudioPlayerDelegate
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
