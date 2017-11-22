@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'CDFoundation'
-  s.version = '0.0.11'
+  s.version = '0.0.12'
   s.license = 'MIT'
   s.summary = 'Basic toolset for CodoonSport.'
   s.homepage = 'https://github.com/iOSCodoon'
