@@ -57,24 +57,10 @@
         [weakSelf callCenterDidChangeState];
     };
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveInterruptionNotification:) name:AVAudioSessionInterruptionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMediaServicesWereLostNotification:) name:AVAudioSessionMediaServicesWereLostNotification object:nil];
     
     return self;
-}
-
-- (void)didReceiveInterruptionNotification:(NSNotification *)notification {
-    AVAudioSessionInterruptionType interruptionType = [[notification.userInfo objectForKey:AVAudioSessionInterruptionTypeKey] integerValue];
-    if(interruptionType == AVAudioSessionInterruptionTypeBegan) {
-        _interrupted = YES;
-    } else {
-        _interrupted = NO;
-    }
-    
-    if(_interrupted) {
-        [self drain];
-    }
 }
 
 - (void)didReceiveRouteChangeNotification:(NSNotification *)notification {
