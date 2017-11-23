@@ -54,11 +54,12 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 - (void)startPlaying;
 - (void)stopPlaying;
 
-@property (readwrite, nonatomic, strong) void (^completion) ();
+@property (readwrite, nonatomic, strong) void (^completion) (void);
 
 @property (readwrite, nonatomic, strong) id userInfo;
 
 @end
+
 
 
 extern NSString * const CDSoundTaskWillStartPlayingNotification;
@@ -66,6 +67,7 @@ extern NSString * const CDSoundTaskDidStartPlayingNotification;
 
 extern NSString * const CDSoundTaskWillStopPlayingNotification;
 extern NSString * const CDSoundTaskDidStopPlayingNotification;
+
 
 
 extern NSString * const CDSoundTaskWillActiveAudioSessionNotification;

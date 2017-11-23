@@ -29,6 +29,8 @@
 
 @property (readonly) NSMutableArray<CDSoundTask *> *tasks;
 
+@property (readonly) CDSoundTask *task;
+
 + (instancetype)sharedInstance;
 
 - (void)addDelegate:(id<CDSoundQueueDelegate>)delegate;
