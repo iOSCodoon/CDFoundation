@@ -57,18 +57,16 @@
         NSString *category = AVAudioSessionCategoryPlayback;
         AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
 
-        if(_options&CDSoundTaskOptionMixWithOthers)
-        {
+        if(_options&CDSoundTaskOptionMixWithOthers) {
             options = AVAudioSessionCategoryOptionMixWithOthers;
             category = AVAudioSessionCategoryPlayback;
-        }
-        else if(_options&CDSoundTaskOptionSolo)
-        {
+        } else if(_options&CDSoundTaskOptionSolo) {
             options = AVAudioSessionCategoryOptionDuckOthers;
             category = AVAudioSessionCategorySoloAmbient;
-        }
-        else
-        {
+        } else if(_options&CDSoundTaskOptionAmbient) {
+            options = AVAudioSessionCategoryOptionMixWithOthers;
+            category = AVAudioSessionCategoryAmbient;
+        } else {
             options = AVAudioSessionCategoryOptionDuckOthers;
             category = AVAudioSessionCategoryPlayback;
         }

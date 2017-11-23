@@ -17,7 +17,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskOptions) {
     
     CDSoundTaskOptionDuckOthers = 16 << 0,
     CDSoundTaskOptionMixWithOthers = 16 << 1,
-    CDSoundTaskOptionSolo = 16 << 2
+    CDSoundTaskOptionSolo = 16 << 2,
+    CDSoundTaskOptionAmbient = 16 << 3
 };
 
 typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
