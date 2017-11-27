@@ -12,7 +12,6 @@
 
 @interface CDSoundTask () <AVAudioPlayerDelegate>
 @property (readwrite, nonatomic, strong) AVAudioPlayer *player;
-@property (readwrite, nonatomic, weak) AVAudioPlayer *weakPlayer;
 @property (readwrite, nonatomic, strong) dispatch_queue_t queue;
 @end
 
@@ -42,12 +41,12 @@
     _data = data;
 
     _player = [[AVAudioPlayer alloc] initWithData:_data error:nil];
-    _weakPlayer = _player;
-
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillStartPlayingNotification:) name:CDSoundTaskWillStartPlayingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidStopPlayingNotification:) name:CDSoundTaskDidStopPlayingNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillActiveAudioSessionNotification:) name:CDSoundTaskWillActiveAudioSessionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidActiveAudioSessionNotification:) name:CDSoundTaskDidActiveAudioSessionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillDeactiveAudioSessionNotification:) name:CDSoundTaskWillDeactiveAudioSessionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidDeactiveAudioSessionNotification:) name:CDSoundTaskDidDeactiveAudioSessionNotification object:nil];
     
@@ -62,7 +61,7 @@
     }
     
     if(_options&CDSoundTaskOptionAmbient && [task shouldActiveAudioSession]) {
-        _weakPlayer.volume = MIN(0.2, _volume);
+        _player.volume = MIN(0.2, _volume);
     }
 }
 
@@ -74,8 +73,38 @@
     }
     
     if(_options&CDSoundTaskOptionAmbient && [task shouldActiveAudioSession]) {
-        _weakPlayer.volume = _volume;
+        _player.volume = _volume;
     }
+}
+
+- (void)didReceiveWillActiveAudioSessionNotification:(NSNotification *)notification {
+    CDSoundTask *task = notification.object;
+    
+    if(task == self) {
+        return;
+    }
+    
+    [_player pause];
+}
+
+- (void)didReceiveDidActiveAudioSessionNotification:(NSNotification *)notification {
+    CDSoundTask *task = notification.object;
+    
+    if(task == self) {
+        return;
+    }
+    
+    NSString *category = AVAudioSessionCategoryPlayback;
+    AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
+    [self preferredCategory:&category options:&options];
+    
+    [[AVAudioSession sharedInstance] setCategory:category withOptions:options error:nil];
+    
+    if([self shouldActiveAudioSession]) {
+        [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    }
+    
+    [_player play];
 }
 
 - (void)didReceiveWillDeactiveAudioSessionNotification:(NSNotification *)notification {
@@ -85,7 +114,7 @@
         return;
     }
     
-    [_weakPlayer pause];
+    [_player pause];
 }
 
 - (void)didReceiveDidDeactiveAudioSessionNotification:(NSNotification *)notification {
@@ -105,7 +134,7 @@
         [[AVAudioSession sharedInstance] setActive:YES error:nil];
     }
     
-    [_weakPlayer play];
+    [_player play];
 }
 
 - (void)preferredCategory:(NSString **)category options:(AVAudioSessionCategoryOptions *)options {
@@ -117,6 +146,9 @@
         *category = AVAudioSessionCategorySoloAmbient;
     } else if(_options&CDSoundTaskOptionAmbient) {
         *options = AVAudioSessionCategoryOptionDuckOthers;
+        *category = AVAudioSessionCategoryPlayback;
+    } else if(_options&CDSoundTaskOptionSilent) {
+        *options = AVAudioSessionCategoryOptionMixWithOthers;
         *category = AVAudioSessionCategoryPlayback;
     } else {
         *options = AVAudioSessionCategoryOptionDuckOthers;
@@ -135,6 +167,8 @@
         
         if([self shouldActiveAudioSession]) {
             [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskWillActiveAudioSessionNotification object:self];
+            
+            [[AVAudioSession sharedInstance] setActive:NO error:nil];
         }
         
         NSString *category = AVAudioSessionCategoryPlayback;
@@ -147,10 +181,15 @@
             [[AVAudioSession sharedInstance] setActive:YES error:nil];
         }
 
-        _weakPlayer.volume = _volume;
-        _weakPlayer.delegate = self;
-        [_weakPlayer prepareToPlay];
-        [_weakPlayer play];
+        _player.volume = _volume;
+        
+        if(_options&CDSoundTaskOptionSilent) {
+            _player.volume = 0;
+        }
+        
+        _player.delegate = self;
+        [_player prepareToPlay];
+        [_player play];
 
         if([self shouldActiveAudioSession]) {
             [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskDidActiveAudioSessionNotification object:self];
@@ -176,11 +215,13 @@
         
         if(willDeactiveAudioSession) {
             [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskWillDeactiveAudioSessionNotification object:self];
+            
+            [[AVAudioSession sharedInstance] setActive:NO error:nil];
         }
 
-        [_weakPlayer stop];
-        _weakPlayer.delegate = nil;
-        _weakPlayer = nil;
+        [_player stop];
+        _player.delegate = nil;
+        _player = nil;
 
         if(willDeactiveAudioSession) {
             [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
@@ -212,7 +253,7 @@
     
     _volume = volume;
     
-    _weakPlayer.volume = volume;
+    _player.volume = volume;
     
     [self didChangeValueForKey:@"volume"];
 }
@@ -248,7 +289,7 @@ NSString * const CDSoundTaskDidDeactiveAudioSessionNotification = @"CDSoundTaskD
 @implementation CDSoundTask (Convenience)
 
 - (BOOL)shouldActiveAudioSession {
-    return (!(_options&CDSoundTaskOptionMixWithOthers));
+    return (!(_options&CDSoundTaskOptionMixWithOthers) && !(_options&CDSoundTaskOptionSilent));
 }
 
 @end

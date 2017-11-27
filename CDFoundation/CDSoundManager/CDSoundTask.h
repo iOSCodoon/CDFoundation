@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class CDSoundTask;
+@class AVAudioPlayer;
 
 typedef NS_ENUM(NSUInteger, CDSoundTaskOptions) {
     CDSoundTaskOptionImmediate = 0 << 0,
@@ -18,7 +19,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskOptions) {
     CDSoundTaskOptionDuckOthers = 16 << 0,
     CDSoundTaskOptionMixWithOthers = 16 << 1,
     CDSoundTaskOptionSolo = 16 << 2,
-    CDSoundTaskOptionAmbient = 16 << 3
+    CDSoundTaskOptionAmbient = 16 << 3,
+    CDSoundTaskOptionSilent = 16 << 4,
 };
 
 typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
@@ -57,6 +59,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 @property (readwrite, nonatomic, strong) void (^completion) (void);
 
 @property (readwrite, nonatomic, strong) id userInfo;
+
+@property (readonly) AVAudioPlayer *player;
 
 @end
 
