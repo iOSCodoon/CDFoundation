@@ -62,6 +62,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 
 @property (readonly) AVAudioPlayer *player;
 
+@property (readwrite, nonatomic, assign) BOOL pending;
+
 @end
 
 

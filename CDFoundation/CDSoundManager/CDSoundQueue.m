@@ -159,6 +159,7 @@
             [_tasks removeObject:task];
         }
         
+        task.pending = NO;
         task.delegate = self;
         [task startPlaying];
         

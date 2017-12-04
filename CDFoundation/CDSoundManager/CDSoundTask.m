@@ -32,6 +32,8 @@
 - (instancetype)initWithData:(NSData *)data {
     self = [super init];
 
+    _pending = YES;
+    
     _volume = 1;
 
     _queue = dispatch_queue_create(nil, 0);
@@ -84,6 +86,10 @@
         return;
     }
     
+    if(_pending) {
+        return;
+    }
+    
     [_player pause];
 }
 
@@ -91,6 +97,10 @@
     CDSoundTask *task = notification.object;
     
     if(task == self) {
+        return;
+    }
+    
+    if(_pending) {
         return;
     }
     
@@ -114,6 +124,10 @@
         return;
     }
     
+    if(_pending) {
+        return;
+    }
+    
     [_player pause];
 }
 
@@ -121,6 +135,10 @@
     CDSoundTask *task = notification.object;
     
     if(task == self) {
+        return;
+    }
+    
+    if(_pending) {
         return;
     }
     
