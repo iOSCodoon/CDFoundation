@@ -57,17 +57,9 @@
         [weakSelf callCenterDidChangeState];
     };
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveRouteChangeNotification:) name:AVAudioSessionRouteChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMediaServicesWereLostNotification:) name:AVAudioSessionMediaServicesWereLostNotification object:nil];
     
     return self;
-}
-
-- (void)didReceiveRouteChangeNotification:(NSNotification *)notification {
-    NSInteger reason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
-    if(reason != AVAudioSessionRouteChangeReasonOldDeviceUnavailable && reason != AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
-        [self drain];
-    }
 }
 
 - (void)didReceiveMediaServicesWereLostNotification:(NSNotification *)notification {
