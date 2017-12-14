@@ -47,8 +47,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillStartPlayingNotification:) name:CDSoundTaskWillStartPlayingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidStopPlayingNotification:) name:CDSoundTaskDidStopPlayingNotification object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillActiveAudioSessionNotification:) name:CDSoundTaskWillActiveAudioSessionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidActiveAudioSessionNotification:) name:CDSoundTaskDidActiveAudioSessionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveWillDeactiveAudioSessionNotification:) name:CDSoundTaskWillDeactiveAudioSessionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveDidDeactiveAudioSessionNotification:) name:CDSoundTaskDidDeactiveAudioSessionNotification object:nil];
     
@@ -183,12 +181,6 @@
 
         [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskWillStartPlayingNotification object:self];
         
-        if([self shouldActiveAudioSession]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskWillActiveAudioSessionNotification object:self];
-            
-            [[AVAudioSession sharedInstance] setActive:NO error:nil];
-        }
-        
         NSString *category = AVAudioSessionCategoryPlayback;
         AVAudioSessionCategoryOptions options = AVAudioSessionCategoryOptionMixWithOthers;
         [self preferredCategory:&category options:&options];
@@ -208,10 +200,6 @@
         _player.delegate = self;
         [_player prepareToPlay];
         [_player play];
-
-        if([self shouldActiveAudioSession]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskDidActiveAudioSessionNotification object:self];
-        }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:CDSoundTaskDidStartPlayingNotification object:self];
         
@@ -295,10 +283,6 @@ NSString * const CDSoundTaskDidStartPlayingNotification = @"CDSoundTaskDidStartP
 
 NSString * const CDSoundTaskWillStopPlayingNotification = @"CDSoundTaskWillStopPlayingNotification";
 NSString * const CDSoundTaskDidStopPlayingNotification = @"CDSoundTaskDidStopPlayingNotification";
-
-
-NSString * const CDSoundTaskWillActiveAudioSessionNotification = @"CDSoundTaskWillActiveAudioSessionNotification";
-NSString * const CDSoundTaskDidActiveAudioSessionNotification = @"CDSoundTaskDidActiveAudioSessionNotification";
 
 NSString * const CDSoundTaskWillDeactiveAudioSessionNotification = @"CDSoundTaskWillDeactiveAudioSessionNotification";
 NSString * const CDSoundTaskDidDeactiveAudioSessionNotification = @"CDSoundTaskDidDeactiveAudioSessionNotification";

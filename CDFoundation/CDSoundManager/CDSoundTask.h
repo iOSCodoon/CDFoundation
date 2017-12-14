@@ -75,9 +75,5 @@ extern NSString * const CDSoundTaskWillStopPlayingNotification;
 extern NSString * const CDSoundTaskDidStopPlayingNotification;
 
 
-
-extern NSString * const CDSoundTaskWillActiveAudioSessionNotification;
-extern NSString * const CDSoundTaskDidActiveAudioSessionNotification;
-
 extern NSString * const CDSoundTaskWillDeactiveAudioSessionNotification;
 extern NSString * const CDSoundTaskDidDeactiveAudioSessionNotification;
