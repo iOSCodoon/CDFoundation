@@ -61,7 +61,7 @@
     }
     
     if(_options&CDSoundTaskOptionAmbient && [task shouldActiveAudioSession]) {
-        _player.volume = MIN(0.2, _volume);
+        _player.volume = MIN(0.5, _volume);
     }
 }
 
