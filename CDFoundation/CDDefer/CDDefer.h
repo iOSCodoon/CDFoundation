@@ -10,6 +10,6 @@
 
 typedef long dispatch_defer_t;
 
-extern dispatch_defer_t dispatch_defer_create();
+extern dispatch_defer_t dispatch_defer_create(void);
 
 extern void dispatch_defer(dispatch_defer_t *defer, dispatch_block_t block);

@@ -19,7 +19,7 @@
 }
 @end
 
-dispatch_defer_t dispatch_defer_create()
+dispatch_defer_t dispatch_defer_create(void)
 {
     return 0;
 }
