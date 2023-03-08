@@ -51,6 +51,8 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 
 @property (readwrite, nonatomic, assign) float volume;
 
+@property (assign, nonatomic) BOOL isFinish;
+
 - (instancetype)initWithData:(NSData *)data;
 
 - (void)startPlaying;
@@ -63,6 +65,9 @@ typedef NS_ENUM(NSUInteger, CDSoundTaskPriority) {
 @property (readonly) AVAudioPlayer *player;
 
 @property (readwrite, nonatomic, assign) BOOL pending;
+
+///播放声音的同时是否需要支持录音
+@property (nonatomic, assign) BOOL isNeedSupportPlayAndRecord;
 
 @end
 

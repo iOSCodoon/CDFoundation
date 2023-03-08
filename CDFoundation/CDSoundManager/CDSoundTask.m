@@ -170,6 +170,11 @@
         *options = AVAudioSessionCategoryOptionDuckOthers;
         *category = AVAudioSessionCategoryPlayback;
     }
+    
+    if (self.isNeedSupportPlayAndRecord) {
+        *options = AVAudioSessionCategoryOptionDefaultToSpeaker | AVAudioSessionCategoryOptionMixWithOthers;
+        *category = AVAudioSessionCategoryPlayAndRecord;
+    }
 }
 
 - (void)startPlaying
@@ -267,6 +272,7 @@
 #pragma mark - AVAudioPlayerDelegate
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    self.isFinish = YES;
     [self stopPlaying];
 }
 
